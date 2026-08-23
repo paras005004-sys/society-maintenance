@@ -1,5 +1,6 @@
 # Build stage
 FROM node:20-bookworm-slim AS builder
+RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
@@ -10,6 +11,7 @@ RUN npm ci --only=production && npx prisma generate
 
 # Production stage
 FROM node:20-bookworm-slim AS production
+RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
 
