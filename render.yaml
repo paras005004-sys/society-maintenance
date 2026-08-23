@@ -5,7 +5,6 @@ services:
     plan: free
     dockerContext: server
     dockerfilePath: server/Dockerfile
-    dockerCommand: sh -c "npx prisma db push --accept-data-loss && npm run db:seed && node server.js"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -33,6 +32,19 @@ services:
         value: noreply@dummy.com
       - key: GROQ_API_KEY
         value: dummy
+
+  - type: web
+    name: society-frontend
+    env: static
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: society-backend
+          property: url
 
 databases:
   - name: society-db
