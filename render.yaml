@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: society-backend
+    env: docker
+    plan: free
+    dockerContext: server
+    dockerfilePath: server/Dockerfile
+    dockerCommand: npx prisma db push --accept-data-loss && npm run db:seed && node server.js
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: society-db
+          property: connectionString
+      - key: PORT
+        value: 6000
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        value: '*'
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dummy
+      - key: CLOUDINARY_API_KEY
+        value: dummy
+      - key: CLOUDINARY_API_SECRET
+        value: dummy
+      - key: RESEND_API_KEY
+        value: dummy
+      - key: FROM_EMAIL
+        value: noreply@dummy.com
+      - key: GROQ_API_KEY
+        value: dummy
+
+databases:
+  - name: society-db
+    plan: free
+    databaseName: society_db
+    user: society_user
