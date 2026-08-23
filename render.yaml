@@ -5,7 +5,7 @@ services:
     plan: free
     dockerContext: server
     dockerfilePath: server/Dockerfile
-    dockerCommand: npx prisma db push --accept-data-loss && npm run db:seed && node server.js
+    dockerCommand: sh -c "npx prisma db push --accept-data-loss && npm run db:seed && node server.js"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
