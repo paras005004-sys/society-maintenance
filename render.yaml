@@ -48,7 +48,7 @@ services:
         fromService:
           type: web
           name: society-backend
-          property: url
+          property: host
 
 databases:
   - name: society-db
