@@ -1,214 +1,107 @@
-# Society Maintenance Management System
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
-![Groq AI](https://img.shields.io/badge/Groq-AI-black)
-![License](https://img.shields.io/badge/License-MIT-green)
+# Society Maintenance Tracker
 
-A web-based platform designed to coordinate maintenance requests and community announcements within a residential building complex. The system enables residents to submit complaints, check for duplicate issues, and upload attachments, while providing administrators with a central management dashboard, audit trails, and pinned community notices.
+A web-based platform designed to coordinate maintenance requests and community announcements within a residential building complex. The system enables residents to raise and track complaints with supporting photos, while providing administrators with a central management dashboard, overdue tracking, and pinned community notices.
 
-## Live Demo
+## 🚀 Live Hosted Application
 
-- **Web Application:** [https://societymaintenance.pancred.space](https://societymaintenance.pancred.space)
+- **Frontend (Vercel):** [https://societymaintenance.pancred.space](https://societymaintenance.pancred.space)
+- **Backend API (Render):** [https://society-maintenance-mkgu.onrender.com/api](https://society-maintenance-mkgu.onrender.com/api)
 
-## Features
+## ✨ Core Features (Assignment Scope)
 
-### Authentication
-- Role-based access control separating Residents from Administrators.
-- Secure session management using JSON Web Tokens (JWT) and cookies.
+### 1. Resident Features
+- **Authentication:** Residents can securely register and log in via JWT role-based authentication.
+- **Raise Complaints:** Submit maintenance issues with a specific category, detailed description, and optional photo attachment (handled via Cloudinary).
+- **Track Status:** View a personal dashboard of all raised complaints, including a full timestamped history of status updates.
+- **Email Notifications:** Receive automated emails (via Resend) whenever a complaint's status changes or a new pinned notice is published.
 
-### Complaint Management
-- Multi-step status transitions (`OPEN` → `IN_PROGRESS` → `RESOLVED` / `UNRESOLVED`) with mandatory action remarks.
-- Image uploads for visual proof of maintenance issues.
-- Detailed audit logs capturing every status update, time, and admin remark.
+### 2. Admin Features
+- **Complaint Management:** View all incoming complaints. Filter by category, status, or date, and assign a priority level (`Low`, `Medium`, `High`).
+- **Status Lifecycle:** Update ticket statuses (`OPEN` → `IN_PROGRESS` → `RESOLVED`). Every change is immutably logged with the admin's name, a timestamp, and an optional note.
+- **Overdue Detection:** A background scheduler automatically flags complaints that stay open beyond a configurable threshold, pinning them to the top of the admin dashboard for urgent attention.
+- **Notice Board:** Post announcements to the community notice board. Important notices can be pinned to the top of the feed and instantly broadcasted via email.
+- **Reporting Dashboard:** View aggregated metrics of total complaints by status, category, and overdue counts.
 
-### Admin Dashboard
-- Consolidated operations dashboard displaying status metrics and SLA tracking for overdue complaints.
-- User directory console for managing user accounts and roles.
+## 📚 Documentation
+Detailed documentation is available in the `/docs` directory:
+- [API Documentation](./docs/api-reference.md)
+- [Database Schema](./docs/database-schema.md)
+- [System Design Write-up](./SYSTEM_DESIGN.md)
+- [Deployment Guide](./docs/deployment.md)
 
-### AI Features
-- Real-time complaint suggestions (title, category, priority, and polished description) to streamline submission.
-- Semantic duplicate detection to flag matching open complaints and reduce backlog clutter.
-- Natural language search query parsing into structural query filters.
-- Scheduled operational insights compiled directly from recent complaint logs.
-- AI-assisted announcement formatting for bulletin board notices.
+## 🛠️ Tech Stack
 
-### Notifications
-- Automatic email updates dispatched to residents when their submitted complaints change status.
-- Pinned and broadcasted critical notice announcements.
+- **Frontend:** React, Vite, Vanilla CSS
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL (with Prisma ORM)
+- **Storage:** Cloudinary
+- **Email:** Resend
 
-### Deployment
-- Containerized configuration for local orchestration and testing.
-- Single-page application router rewrites optimized for production hosting.
+## 💻 Local Setup Guide
 
-## Tech Stack
+### 1. Prerequisites
+Ensure you have [Node.js](https://nodejs.org/) (v20+) and [PostgreSQL](https://www.postgresql.org/) installed on your machine.
 
-- **Frontend:** React, Vite, React Router, Vanilla CSS
-- **Backend:** Node.js, Express
-- **Database:** PostgreSQL
-- **AI:** Groq API (Llama models)
-- **Cloud:** Cloudinary (Asset Hosting), Resend (Transactional Email)
-- **Deployment:** Vercel (Frontend), Render (Backend), Neon (Serverless Database)
-- **Containerization:** Docker, Docker Compose
+### 2. Installation
+Clone the repository and install dependencies for both the client and server:
 
-## Application Walkthrough
-
-### 1. Dashboards
-
-| Resident Dashboard | Admin Dashboard |
-|--------------------|-----------------|
-| <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199412/Screenshot_2026-07-16_162009_z9uczk.png" width="460"> | <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199412/Screenshot_2026-07-16_161800_z8meyw.png" width="460"> |
-
----
-
-### 2. Complaint Creation & Management
-
-| Create Complaint with AI Assistant | Complaint Management & Detail View |
-|------------------------------------|------------------------------------|
-| <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199412/Screenshot_2026-07-16_162059_sydpxq.png" width="460"> | <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199411/Screenshot_2026-07-16_161905_pypv0g.png" width="460"> |
-
----
-
-### 3. Notice Board & User Management
-
-<p align="center">
-  <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199411/Screenshot_2026-07-16_161928_w8t5fe.png" width="700">
-</p>
-
-## Demo Video
-
-[![Society Maintenance Management Demo](https://img.youtube.com/vi/iCsUh7rX-tA/hqdefault.jpg)](https://youtu.be/iCsUh7rX-tA)
-
-## Project Architecture
-
-```mermaid
-graph TD
-    React[React Frontend]
-    Express[Express Backend]
-    Prisma[Prisma ORM]
-    PostgreSQL[(PostgreSQL)]
-    Cloudinary[Cloudinary]
-    Groq[Groq LLM]
-    Resend[Resend]
-
-    React --> Express
-    Express --> Prisma
-    Prisma --> PostgreSQL
-    Express --> Cloudinary
-    Express --> Groq
-    Express --> Resend
-```
-
-## AI Features
-
-### Complaint Assistant
-Suggests a concise title, category, priority level, and refined description based on free-text user descriptions.
-
-### Duplicate Detection
-Compares incoming complaints against the database's recent open tickets using semantic search to prevent duplicate entries.
-
-### Natural Language Search
-Parses free-text search queries (e.g., "high priority plumbing leaks in Tower A") into database filter parameters.
-
-### Operations Insights
-Generates periodic action points and trend summaries for admins based on recent unresolved tickets.
-
-### AI Notice Generator
-Drafts and formats professional announcement content based on admin prompts.
-
-## Local Setup
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/society-maintenance-management.git
-cd society-maintenance-management
-```
+# Clone the repository
+git clone https://github.com/paras005004-sys/society-maintenance.git
+cd society-maintenance
 
-### 2. Install Dependencies
-```bash
-# Install backend dependencies
-cd server && npm install
+# Install server dependencies
+cd server
+npm install
 
-# Install frontend dependencies
-cd ../client && npm install
+# Install client dependencies
+cd ../client
+npm install
 ```
 
 ### 3. Environment Variables
-Create a `.env` file in the `server` directory:
+Reference the `.env.example` file in the root directory.
+Create a `.env` file inside the `server/` directory and populate it with your database credentials and API keys:
+
 ```env
 PORT=6000
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/society_db"
-JWT_SECRET="your-jwt-secret-key"
+DATABASE_URL="postgresql://username:password@localhost:5432/society_db"
+JWT_SECRET="your_secure_jwt_secret"
 JWT_EXPIRES_IN=7d
 CLIENT_URL="http://localhost:5173"
-CLOUDINARY_CLOUD_NAME="your-cloudinary-name"
-CLOUDINARY_API_KEY="your-cloudinary-key"
-CLOUDINARY_API_SECRET="your-cloudinary-secret"
-RESEND_API_KEY="your-resend-key"
-FROM_EMAIL="noreply@yourdomain.com"
-GROQ_API_KEY="your-groq-key"
+CLOUDINARY_CLOUD_NAME="your_cloudinary_name"
+CLOUDINARY_API_KEY="your_cloudinary_api_key"
+CLOUDINARY_API_SECRET="your_cloudinary_api_secret"
+RESEND_API_KEY="your_resend_api_key"
+FROM_EMAIL="onboarding@resend.dev"
 ```
 
-Create a `.env` file in the `client` directory:
+Create a `.env` file inside the `client/` directory:
 ```env
 VITE_API_URL="http://localhost:6000/api"
 ```
 
-### 4. Database Initialization
+### 4. Database Setup (Prisma)
+From the `server/` directory, push the schema to your local database and seed the default roles/users:
+
 ```bash
-cd ../server
 npx prisma db push
 npm run db:seed
 ```
 
-### 5. Start Development Servers
+*(This creates a default admin: `admin@society.com` / `admin@123`)*
+
+### 5. Start the Application
+Open two terminal windows to run the frontend and backend concurrently:
+
 ```bash
-# Start backend (from server directory)
+# Terminal 1: Start Backend Server
+cd server
 npm run dev
 
-# Start frontend (from client directory in a new terminal)
-cd ../client && npm run dev
+# Terminal 2: Start Frontend Client
+cd client
+npm run dev
 ```
 
-## Deployment
-
-- **Frontend:** Deployed on **Vercel** with custom routing definitions.
-- **Backend:** Deployed on **Render** linked to continuous deployment pipelines.
-- **Database:** Serverless PostgreSQL hosted on **Neon**.
-
-## Testing
-
-Run unit and integration tests from the `server` directory:
-```bash
-cd server
-npm run test
-```
-All external network dependencies (Groq, Resend, Cloudinary) and database actions are mocked, allowing tests to run completely offline.
-
-## Folder Structure
-
-```
-society-maintenance-management/
-├── client/
-│   ├── public/         # Static assets (Favicons, logos)
-│   ├── src/
-│   │   ├── api/        # Fetch wrappers
-│   │   ├── components/ # Shared UI elements
-│   │   ├── context/    # Auth state
-│   │   └── pages/      # Route templates
-│   └── Vite config
-└── server/
-    ├── prisma/         # Schema and seeds
-    ├── src/
-    │   ├── config/     # Database and SDK startup
-    │   ├── routes/     # Route endpoints
-    │   ├── services/   # Business logic and integrations
-    │   └── validations/# Schema structures
-    └── server.js
-```
-
-## License
-
-MIT
+The application will now be running at `http://localhost:5173`.

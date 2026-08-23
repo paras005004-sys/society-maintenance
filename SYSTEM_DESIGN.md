@@ -1,91 +1,76 @@
-# System Design Document — Society Maintenance Management
+# System Design Document — Society Maintenance Tracker
 
-This document details the requirements, design decisions, technology selections, and architectural trade-offs made in the implementation of the Society Maintenance Management system.
-
----
-
-## 1. Requirements
-
-### Functional Requirements
-1. **Role-Based Workspaces:** Support distinct features for Residents (raise tickets, view bulletins, update profile) and Admins (triage incident queues, update ticket statuses, manage bulletins, edit user roles).
-2. **AI-Assisted Ticketing:** Process unstructured ticket descriptions to suggest structured titles, categories, and priority metrics.
-3. **Semantic Duplicate Check:** Warn residents of possible duplicate active complaints before they submit a ticket.
-4. **Chronological Audit History:** Automatically maintain an append-only log of all status transitions (`OPEN` → `IN_PROGRESS` → `RESOLVED`) along with assignee notes.
-5. **Bulletin Notice System:** Support publishing and pinning community announcements.
-
-### Non-Functional Requirements
-1. **Privacy-Safe Data Exposure:** Limit data shown on matching duplicates. Mask private resident fields (names, flat numbers) for tickets filed by other residents.
-2. **stateless Scalability:** Keep the application server stateless to simplify horizontal scaling.
-3. **Responsiveness:** Optimize layout reflows and minimize UI shift when the navigation sidebar collapses or viewports resize.
+This document outlines the architectural decisions and design models implemented to meet the core evaluation requirements of the Society Maintenance Tracker platform. 
 
 ---
 
-## 2. Component Architecture
+## 1. Complaint Lifecycle and Status History Design
 
-The platform is structured as a decoupled client-server architecture:
+A core requirement is ensuring every status change (`OPEN` → `IN_PROGRESS` → `RESOLVED`) is immutably recorded with a timestamp, the actor's identity, and an optional note. 
 
-```
-┌─────────────────────────────────┐
-│     Vite React SPA Client       │
-└────────────────┬────────────────┘
-                 │ HTTPS / REST (JWT in headers)
-                 ▼
-┌─────────────────────────────────┐
-│    Node Express API Gateway     │
-└────────┬───────┬────────┬───────┘
-         │       │        │
-         │       │        └──────────────┐
-         ▼ (Prisma)      ▼ (SDK)        ▼ (HTTP REST)
-┌────────────┐  ┌────────────┐  ┌────────────┐
-│ PostgreSQL │  │ Cloudinary │  │  Groq API  │
-└────────────┘  └────────────┘  └────────────┘
-```
+**Implementation Model:**
+We implemented an **append-only audit log pattern** using a dedicated `ComplaintHistory` table in PostgreSQL, linked to the main `Complaint` table via a foreign key relationship.
 
-- **React SPA:** Handles all rendering and routing in client-side memory.
-- **Express API Gateway:** Intercepts incoming requests, applies schema validators and auth guards, and coordinates services.
-- **PostgreSQL Database:** Stores relational tables under constraints enforced via Prisma.
-- **Cloudinary Storage:** Persists resident avatars and ticket attachments directly via stream uploads.
-- **Groq API:** Orchestrates on-demand text completion prompts and semantic similarity checks.
+- **The `Complaint` Table:** Holds the current, definitive state of the ticket (e.g., status, priority, category, description).
+- **The `ComplaintHistory` Table:** Acts as an immutable ledger. Whenever an admin updates the status of a complaint, the backend service uses Prisma ORM to execute a database transaction. This transaction atomically updates the `Complaint` table's status *and* inserts a new row into the `ComplaintHistory` table.
+
+**Why this design?**
+Storing the history in a separate table ensures data integrity. It prevents "split-brain" scenarios where the current status might contradict the history logs. The transactional approach guarantees that an audit log is never missed when a status changes, providing full transparency to residents tracking their tickets.
 
 ---
 
-## 3. Design Decisions & Rationale
+## 2. Overdue Detection and Priority Handling
 
-### Why PostgreSQL?
-- **Data Integrity:** Ticket logging requires strict relational consistency. Using foreign keys ensures that history logs (`ComplaintHistory`) cannot point to non-existent tickets or deleted users.
-- **Transactional History:** Changing a complaint status requires writing to the ticket table and appending to the history logs simultaneously. PostgreSQL allows executing these operations in atomic transactions, preventing split-state scenarios.
+Admins need to easily identify complaints that have been open for too long so they can be prioritized.
 
-### Why Prisma ORM?
-- **Typesafe Client:** Prisma generates type definitions matching the schema exactly, catching database field mismatches at compile time rather than runtime.
-- **Declarative Database Sync:** Prisma schema acts as the single source of truth. Synchronizing tables via `npx prisma db push` guarantees that local developer databases match production Neon environments.
+**Implementation Model:**
+We implemented a background CRON scheduler using the `node-cron` package. 
 
-### Why Stateless JWT Authentication?
-- **Horizontal Scalability:** Storing sessions in stateless tokens instead of server memory allows incoming requests to hit different backend instances without session replication synchronization.
-- **Security:** Each token is signed using `JWT_SECRET` and carries short expiration limits, eliminating the database lookup latency needed for session validation.
-
-### Why Cloudinary Stream Uploads?
-- **Stateless Storage:** Because deployed Render instances are stateless and ephemeral, storing uploaded photos on local disk is not viable. Cloudinary stores media assets permanently, returning a secure URL persisted in the database.
+- **Threshold Configuration:** The system relies on a configurable environment constant (`OVERDUE_THRESHOLD_DAYS`, currently set to 3 days).
+- **Detection Job:** The scheduler runs a daily check against the database for any complaints that are not in the `RESOLVED` state where the `createdAt` timestamp is older than the `OVERDUE_THRESHOLD_DAYS`.
+- **Flagging:** When identified, the complaint is updated with an `isOverdue: true` boolean flag. 
+- **Priority Management:** Admins can manually set and update a ticket's priority (`Low`, `Medium`, `High`). On the admin dashboard, overdue complaints are automatically pulled to the top of the queue and visually highlighted in red, regardless of their standard priority, ensuring they are not ignored.
 
 ---
 
-## 4. AI Service Integration & Fallback Strategy
+## 3. Photo Upload and Notice Board Design
 
-The application integrates with the Groq API to perform text classifications. 
+The system must handle media assets (photos attached to complaints) and support a community announcement board.
 
-### Multi-Model Fallback Queue
-To handle rate limits or API downtime, requests pass through a sequential fallback pipeline:
-1. `openai/gpt-oss-20b` (Primary fallback)
-2. `meta-llama/llama-4-scout-17b-16e-instruct` (Secondary fallback)
-3. `llama-3.1-8b-instant` (Tertiary fallback)
+**Photo Upload Implementation:**
+Since modern backend deployments (like Render) use ephemeral, stateless containers, saving files to local disk results in data loss during restarts. 
+To solve this, we implemented stateless, direct-to-cloud media storage using **Cloudinary**. When a resident uploads a photo, the Express backend receives the `multipart/form-data` stream and pipes it directly to Cloudinary. The database simply stores the returned secure URL string (`imageUrl`), keeping the application lightweight and scalable.
 
-This queue ensures the application degrades gracefully and continues functioning if a specific model endpoint fails.
+**Notice Board Design:**
+The notice board is driven by the `Notice` database schema. Admins can create announcements with a title and content. 
+To satisfy the requirement of "important" notices, the schema includes an `isPinned` boolean flag. When the frontend fetches notices, it sorts the query to ensure all `isPinned = true` notices are anchored at the top of the feed for maximum visibility.
 
 ---
 
-## 5. Architectural Trade-offs
+## 4. Notification Flow
 
-### Non-Blocking Semantic Duplicate Detection
-- **Trade-off:** Rather than performing duplicate checks client-side using simple string matching (which misses synonyms like "lift down" vs "elevator broken"), we run a prompt on Groq comparing description semantics. While this introduces API latency (~1.5s), we execute it as a non-blocking check during initial form submission. This gives residents immediate warning of duplicate tickets while retaining the option to click "Continue Anyway".
+Residents must be proactively updated regarding their complaints and important community news without needing to constantly check the portal.
 
-### Short Token Expirations vs Session Revocation
-- **Trade-off:** Using stateless JWTs prevents instant session revocation (e.g., if a user is demoted or suspended mid-session, they remain logged in until the token expires). We compromise by setting token expirations to a moderate duration (`7d`) to balance session length with access security.
+**Implementation Model:**
+We integrated the **Resend API** (a robust, free-tier friendly transactional email provider) into a dedicated `EmailService` utility.
+
+The notification flow operates on an event-driven basis within the controllers:
+1. **Status Updates:** When an admin updates a ticket, after the database transaction successfully commits the new `ComplaintHistory` log, the controller invokes `EmailService.sendStatusUpdateEmail()`. The resident receives an email containing the new status and the admin's note.
+2. **Pinned Notices:** When an admin creates a new notice with the `isPinned` flag checked, the controller invokes `EmailService.sendImportantNoticeEmail()`, fetching all registered resident emails and broadcasting the announcement.
+
+**Trade-offs:** 
+Email dispatching adds minor latency to the HTTP request cycle. However, by handling the dispatch asynchronously after the database commit, we prevent third-party API delays from blocking the user interface.
+
+---
+
+## 5. Dashboard and Reporting
+
+The application aggregates raw complaint data into actionable insights for the administrator.
+
+**Implementation Model:**
+The `/api/dashboard` route executes complex Prisma aggregation queries (`groupBy` and `count`) to calculate:
+1. Total complaints split by status (Open, In Progress, Resolved).
+2. Total complaints split by category (Plumbing, Electrical, etc.).
+3. Total active overdue complaints.
+
+This raw numerical data is passed to the React frontend, which visualizes it using clean metric cards and charting libraries, providing the admin with an instant bird's-eye view of society operations.
