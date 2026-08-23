@@ -1,0 +1,214 @@
+# Society Maintenance Management System
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
+![Groq AI](https://img.shields.io/badge/Groq-AI-black)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+A web-based platform designed to coordinate maintenance requests and community announcements within a residential building complex. The system enables residents to submit complaints, check for duplicate issues, and upload attachments, while providing administrators with a central management dashboard, audit trails, and pinned community notices.
+
+## Live Demo
+
+- **Web Application:** [https://societymaintenance.pancred.space](https://societymaintenance.pancred.space)
+
+## Features
+
+### Authentication
+- Role-based access control separating Residents from Administrators.
+- Secure session management using JSON Web Tokens (JWT) and cookies.
+
+### Complaint Management
+- Multi-step status transitions (`OPEN` → `IN_PROGRESS` → `RESOLVED` / `UNRESOLVED`) with mandatory action remarks.
+- Image uploads for visual proof of maintenance issues.
+- Detailed audit logs capturing every status update, time, and admin remark.
+
+### Admin Dashboard
+- Consolidated operations dashboard displaying status metrics and SLA tracking for overdue complaints.
+- User directory console for managing user accounts and roles.
+
+### AI Features
+- Real-time complaint suggestions (title, category, priority, and polished description) to streamline submission.
+- Semantic duplicate detection to flag matching open complaints and reduce backlog clutter.
+- Natural language search query parsing into structural query filters.
+- Scheduled operational insights compiled directly from recent complaint logs.
+- AI-assisted announcement formatting for bulletin board notices.
+
+### Notifications
+- Automatic email updates dispatched to residents when their submitted complaints change status.
+- Pinned and broadcasted critical notice announcements.
+
+### Deployment
+- Containerized configuration for local orchestration and testing.
+- Single-page application router rewrites optimized for production hosting.
+
+## Tech Stack
+
+- **Frontend:** React, Vite, React Router, Vanilla CSS
+- **Backend:** Node.js, Express
+- **Database:** PostgreSQL
+- **AI:** Groq API (Llama models)
+- **Cloud:** Cloudinary (Asset Hosting), Resend (Transactional Email)
+- **Deployment:** Vercel (Frontend), Render (Backend), Neon (Serverless Database)
+- **Containerization:** Docker, Docker Compose
+
+## Application Walkthrough
+
+### 1. Dashboards
+
+| Resident Dashboard | Admin Dashboard |
+|--------------------|-----------------|
+| <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199412/Screenshot_2026-07-16_162009_z9uczk.png" width="460"> | <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199412/Screenshot_2026-07-16_161800_z8meyw.png" width="460"> |
+
+---
+
+### 2. Complaint Creation & Management
+
+| Create Complaint with AI Assistant | Complaint Management & Detail View |
+|------------------------------------|------------------------------------|
+| <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199412/Screenshot_2026-07-16_162059_sydpxq.png" width="460"> | <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199411/Screenshot_2026-07-16_161905_pypv0g.png" width="460"> |
+
+---
+
+### 3. Notice Board & User Management
+
+<p align="center">
+  <img src="https://res.cloudinary.com/n8ql5bui/image/upload/v1784199411/Screenshot_2026-07-16_161928_w8t5fe.png" width="700">
+</p>
+
+## Demo Video
+
+[![Society Maintenance Management Demo](https://img.youtube.com/vi/iCsUh7rX-tA/hqdefault.jpg)](https://youtu.be/iCsUh7rX-tA)
+
+## Project Architecture
+
+```mermaid
+graph TD
+    React[React Frontend]
+    Express[Express Backend]
+    Prisma[Prisma ORM]
+    PostgreSQL[(PostgreSQL)]
+    Cloudinary[Cloudinary]
+    Groq[Groq LLM]
+    Resend[Resend]
+
+    React --> Express
+    Express --> Prisma
+    Prisma --> PostgreSQL
+    Express --> Cloudinary
+    Express --> Groq
+    Express --> Resend
+```
+
+## AI Features
+
+### Complaint Assistant
+Suggests a concise title, category, priority level, and refined description based on free-text user descriptions.
+
+### Duplicate Detection
+Compares incoming complaints against the database's recent open tickets using semantic search to prevent duplicate entries.
+
+### Natural Language Search
+Parses free-text search queries (e.g., "high priority plumbing leaks in Tower A") into database filter parameters.
+
+### Operations Insights
+Generates periodic action points and trend summaries for admins based on recent unresolved tickets.
+
+### AI Notice Generator
+Drafts and formats professional announcement content based on admin prompts.
+
+## Local Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/society-maintenance-management.git
+cd society-maintenance-management
+```
+
+### 2. Install Dependencies
+```bash
+# Install backend dependencies
+cd server && npm install
+
+# Install frontend dependencies
+cd ../client && npm install
+```
+
+### 3. Environment Variables
+Create a `.env` file in the `server` directory:
+```env
+PORT=6000
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/society_db"
+JWT_SECRET="your-jwt-secret-key"
+JWT_EXPIRES_IN=7d
+CLIENT_URL="http://localhost:5173"
+CLOUDINARY_CLOUD_NAME="your-cloudinary-name"
+CLOUDINARY_API_KEY="your-cloudinary-key"
+CLOUDINARY_API_SECRET="your-cloudinary-secret"
+RESEND_API_KEY="your-resend-key"
+FROM_EMAIL="noreply@yourdomain.com"
+GROQ_API_KEY="your-groq-key"
+```
+
+Create a `.env` file in the `client` directory:
+```env
+VITE_API_URL="http://localhost:6000/api"
+```
+
+### 4. Database Initialization
+```bash
+cd ../server
+npx prisma db push
+npm run db:seed
+```
+
+### 5. Start Development Servers
+```bash
+# Start backend (from server directory)
+npm run dev
+
+# Start frontend (from client directory in a new terminal)
+cd ../client && npm run dev
+```
+
+## Deployment
+
+- **Frontend:** Deployed on **Vercel** with custom routing definitions.
+- **Backend:** Deployed on **Render** linked to continuous deployment pipelines.
+- **Database:** Serverless PostgreSQL hosted on **Neon**.
+
+## Testing
+
+Run unit and integration tests from the `server` directory:
+```bash
+cd server
+npm run test
+```
+All external network dependencies (Groq, Resend, Cloudinary) and database actions are mocked, allowing tests to run completely offline.
+
+## Folder Structure
+
+```
+society-maintenance-management/
+├── client/
+│   ├── public/         # Static assets (Favicons, logos)
+│   ├── src/
+│   │   ├── api/        # Fetch wrappers
+│   │   ├── components/ # Shared UI elements
+│   │   ├── context/    # Auth state
+│   │   └── pages/      # Route templates
+│   └── Vite config
+└── server/
+    ├── prisma/         # Schema and seeds
+    ├── src/
+    │   ├── config/     # Database and SDK startup
+    │   ├── routes/     # Route endpoints
+    │   ├── services/   # Business logic and integrations
+    │   └── validations/# Schema structures
+    └── server.js
+```
+
+## License
+
+MIT

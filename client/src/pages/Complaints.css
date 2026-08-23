@@ -1,0 +1,204 @@
+/* ============================================================
+   Version 2 Complaints Page Styles
+   ============================================================ */
+
+.complaints-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ── Inline Filters Toolbar ─────────────────────────────────────────────── */
+
+.complaints-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5);
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.filters-group-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.complaints-filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2.5);
+}
+
+.complaints-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.complaints-filters .form-select,
+.complaints-filters .form-input {
+  border: 1px solid var(--color-gray-200);
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-700);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-sm);
+  width: auto;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.complaints-filters .form-select:focus,
+.complaints-filters .form-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+  background-color: white;
+}
+
+.complaints-filter-clear {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.complaints-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  font-weight: 500;
+  padding-left: var(--space-1);
+  margin-bottom: calc(-1 * var(--space-2));
+}
+
+/* ── High-Density Issues Queue Stack ─────────────────────────────────────── */
+
+.complaints-list-container {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .complaints-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .filters-group-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+
+  .complaints-filter-group {
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .complaints-filter-clear {
+    width: 100%;
+  }
+
+  .complaints-filters .form-select,
+  .complaints-filters .form-input {
+    width: 65%;
+  }
+}
+
+/* ── AI Natural Language Search Bar ─────────────────────────────────────── */
+
+.ai-search-bar-container {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.ai-search-input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.ai-search-sparkle-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-accent);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.ai-search-input {
+  width: 100% !important;
+  padding: 12px 40px 12px 38px !important;
+  font-size: var(--font-size-sm) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--color-gray-200) !important;
+  background-color: white !important;
+  box-shadow: var(--shadow-sm);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ai-search-input:focus {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px var(--color-accent-light) !important;
+}
+
+.ai-search-clear-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--color-gray-400);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.ai-search-clear-btn:hover {
+  color: var(--color-gray-600);
+}
+
+.ai-search-submit-btn {
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-search-error-alert {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+  .ai-search-bar-container {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .ai-search-submit-btn {
+    width: 100%;
+    padding: 10px 0;
+  }
+}

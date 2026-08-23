@@ -1,0 +1,230 @@
+/* ============================================================
+   Version 2 Complaint Detail Workspace Styles (70/30 Layout)
+   ============================================================ */
+
+.complaint-detail-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.back-navigation-container {
+  padding-left: var(--space-1);
+  margin-bottom: calc(-1 * var(--space-3));
+}
+
+.complaint-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.complaint-back-link:hover {
+  color: var(--color-gray-900);
+}
+
+.complaint-back-link svg {
+  transition: transform 0.15s ease;
+}
+
+.complaint-back-link:hover svg {
+  transform: translateX(-2px);
+}
+
+.complaint-id-mono {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  background-color: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.complaint-detail-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-700);
+  line-height: 1.6;
+}
+
+/* ── Workspace 70/30 Split Layout ────────────────────────────────────────── */
+
+.complaint-detail-layout {
+  display: flex;
+  gap: var(--space-6);
+  align-items: flex-start;
+  width: 100%;
+}
+
+.complaint-detail-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.complaint-detail-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Photo Upload Box Frame */
+.photo-gallery-frame {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background-color: var(--color-gray-50);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4);
+  box-shadow: inset 0 2px 4px 0 rgba(15, 23, 42, 0.02);
+}
+
+.complaint-detail-photo {
+  max-width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  display: block;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-gray-200);
+}
+
+/* Metadata Attributes List style */
+.metadata-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.metadata-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--space-2.5) 0;
+  border-bottom: 1px dashed var(--color-gray-150);
+}
+
+.metadata-item:last-child {
+  border-bottom: none;
+}
+
+.metadata-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metadata-value {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+/* Status logs timeline */
+.complaint-history-timeline {
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--space-2);
+}
+
+.complaint-history-item {
+  display: flex;
+  gap: var(--space-4);
+  position: relative;
+  padding-bottom: var(--space-6);
+}
+
+.complaint-history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 10px;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-gray-200);
+}
+
+.complaint-history-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gray-300);
+  flex-shrink: 0;
+  margin-top: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.complaint-history-item:first-child .complaint-history-dot {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+.complaint-history-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1.5);
+}
+
+.complaint-history-transition {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2.5);
+  flex-wrap: wrap;
+}
+
+.complaint-history-arrow-svg {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.complaint-history-meta {
+  font-size: 11px;
+  color: var(--color-gray-400);
+  font-weight: 500;
+}
+
+.complaint-history-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  border-left: 2px solid var(--color-accent);
+  padding: var(--space-1) var(--space-3);
+  margin: 0;
+  background-color: var(--color-gray-50);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.5;
+}
+
+.complaint-history-item:last-child {
+  padding-bottom: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .complaint-detail-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .complaint-detail-sidebar {
+    width: 100%;
+    order: -1; /* Display properties/transitions first on smaller screens */
+  }
+}

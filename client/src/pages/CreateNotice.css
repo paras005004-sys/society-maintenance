@@ -1,0 +1,18 @@
+/* ============================================================
+   CreateNotice Page — Component Styles
+   ============================================================ */
+
+.create-notice-card {
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.notice-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-gray-200);
+}

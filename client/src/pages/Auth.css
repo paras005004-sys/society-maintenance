@@ -1,0 +1,183 @@
+/* ============================================================
+   Version 2 Auth Pages Styles
+   ============================================================ */
+
+/* ── Page Container ──────────────────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: var(--space-6);
+}
+
+/* ── Form Card container ─────────────────────────────────────────────────── */
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-10);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card:hover {
+  box-shadow: 0 30px 60px -12px rgba(15, 23, 42, 0.15);
+}
+
+/* ── Typographic Logo Mark ────────────────────────────────────────────────── */
+
+.auth-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.auth-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-gradient);
+  color: white;
+  margin-bottom: var(--space-2);
+  box-shadow: var(--shadow-glow);
+}
+
+.auth-logo-container svg {
+  width: 28px;
+  height: 28px;
+}
+
+.auth-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-gray-900);
+  margin-bottom: 2px;
+  letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin: 0;
+}
+
+/* ── Inputs & Fields ─────────────────────────────────────────────────────── */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper .form-input {
+  padding-right: 3.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--color-gray-400);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  padding: 4px var(--space-2);
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.password-toggle:hover {
+  color: var(--color-gray-900);
+  background-color: var(--color-gray-100);
+}
+
+/* API Error banner custom override */
+.auth-api-error {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-danger-light);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: 12px;
+}
+
+/* Footer layout */
+.auth-divider {
+  border: none;
+  border-top: 1px solid var(--color-gray-200);
+  margin: var(--space-8) 0 var(--space-6) 0;
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+}
+
+.auth-footer a {
+  color: var(--color-accent-dark);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+  color: var(--color-accent);
+}
+
+/* ── Mobile viewport overrides ────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: var(--space-4);
+    background-color: transparent;
+  }
+  
+  .auth-card {
+    padding: var(--space-6);
+  }
+}

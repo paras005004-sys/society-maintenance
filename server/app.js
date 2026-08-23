@@ -1,0 +1,59 @@
+const express = require('express');
+const cors = require('cors');
+const errorHandler = require('./src/middleware/errorHandler');
+const authRoutes = require('./src/routes/auth.routes');
+const complaintRoutes = require('./src/routes/complaint.routes');
+const noticeRoutes = require('./src/routes/notice.routes');
+const dashboardRoutes = require('./src/routes/dashboard.routes');
+const aiRoutes = require('./src/routes/ai.routes');
+const userRoutes = require('./src/routes/user.routes');
+
+const app = express();
+
+// ─── Core Middleware ───────────────────────────────────────────────────────────
+
+app.use(cors({
+  origin: function (origin, callback) {
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', process.env.CLIENT_URL];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Society Maintenance API is running",
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+  });
+});
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
+app.use('/api/auth', authRoutes);
+app.use('/api/complaints', complaintRoutes);
+app.use('/api/notices', noticeRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/users', userRoutes);
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// ─── Error Handler (must be last) ─────────────────────────────────────────────
+
+app.use(errorHandler);
+
+module.exports = app;
